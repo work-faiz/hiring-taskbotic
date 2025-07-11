@@ -68,7 +68,7 @@ const Index = () => {
           .from('user_profiles')
           .select('username')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
         if (data && data.username) setProfileUsername(data.username);
         else setProfileUsername(null);
       }
