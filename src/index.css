@@ -2,93 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Modern Professional Design System */
 
 @layer base {
   :root {
+    /* Light theme - Professional blue-gray palette */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+    
+    /* Professional color palette */
+    --slate-50: 248 250 252;
+    --slate-100: 241 245 249;
+    --slate-200: 226 232 240;
+    --slate-300: 203 213 225;
+    --slate-400: 148 163 184;
+    --slate-500: 100 116 139;
+    --slate-600: 71 85 105;
+    --slate-700: 51 65 85;
+    --slate-800: 30 41 59;
+    --slate-900: 15 23 42;
+    
+    --blue-50: 239 246 255;
+    --blue-100: 219 234 254;
+    --blue-200: 191 219 254;
+    --blue-300: 147 197 253;
+    --blue-400: 96 165 250;
+    --blue-500: 59 130 246;
+    --blue-600: 37 99 235;
+    --blue-700: 29 78 216;
+    --blue-800: 30 64 175;
+    --blue-900: 30 58 138;
+    
+    --emerald-50: 236 253 245;
+    --emerald-100: 209 250 229;
+    --emerald-500: 16 185 129;
+    --emerald-600: 5 150 105;
+    
+    --amber-50: 255 251 235;
+    --amber-100: 254 243 199;
+    --amber-500: 245 158 11;
+    --amber-600: 217 119 6;
+    
+    --red-50: 254 242 242;
+    --red-100: 254 226 226;
+    --red-500: 239 68 68;
+    --red-600: 220 38 38;
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar colors */
+    --sidebar-background: 248 250 252;
+    --sidebar-foreground: 51 65 85;
+    --sidebar-primary: 59 130 246;
+    --sidebar-primary-foreground: 255 255 255;
+    --sidebar-accent: 241 245 249;
+    --sidebar-accent-foreground: 51 65 85;
+    --sidebar-border: 226 232 240;
+    --sidebar-ring: 59 130 246;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark theme - Professional dark palette */
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+    --card: 30 41 59;
+    --card-foreground: 248 250 252;
+    --popover: 30 41 59;
+    --popover-foreground: 248 250 252;
+    --primary: 96 165 250;
+    --primary-foreground: 15 23 42;
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
+    --accent: 51 65 85;
+    --accent-foreground: 248 250 252;
+    --destructive: 239 68 68;
+    --destructive-foreground: 248 250 252;
+    --border: 71 85 105;
+    --input: 71 85 105;
+    --ring: 96 165 250;
+    
+    --sidebar-background: 30 41 59;
+    --sidebar-foreground: 248 250 252;
+    --sidebar-primary: 96 165 250;
+    --sidebar-primary-foreground: 15 23 42;
+    --sidebar-accent: 51 65 85;
+    --sidebar-accent-foreground: 248 250 252;
+    --sidebar-border: 71 85 105;
+    --sidebar-ring: 96 165 250;
   }
 }
 
@@ -98,11 +116,208 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Typography improvements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl lg:text-2xl;
+  }
+
+  /* Focus improvements for accessibility */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }
 
-/* Force black text on hover for select items, even in dark mode */
+/* Professional component styles */
+@layer components {
+  .glass-card {
+    @apply bg-white/95 backdrop-blur-sm border border-slate-200/60 shadow-lg;
+  }
+
+  .dark .glass-card {
+    @apply bg-slate-800/95 border-slate-700/60;
+  }
+
+  .professional-table {
+    @apply bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm;
+  }
+
+  .dark .professional-table {
+    @apply bg-slate-800 border-slate-700;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-applied {
+    @apply bg-slate-100 text-slate-800;
+  }
+
+  .status-shortlisted {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .status-interview-scheduled {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .status-interviewed {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .status-offer-extended {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+
+  .status-hired {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-rejected {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .dark .status-applied {
+    @apply bg-slate-800 text-slate-200;
+  }
+
+  .dark .status-shortlisted {
+    @apply bg-blue-900/50 text-blue-200;
+  }
+
+  .dark .status-interview-scheduled {
+    @apply bg-amber-900/50 text-amber-200;
+  }
+
+  .dark .status-interviewed {
+    @apply bg-purple-900/50 text-purple-200;
+  }
+
+  .dark .status-offer-extended {
+    @apply bg-emerald-900/50 text-emerald-200;
+  }
+
+  .dark .status-hired {
+    @apply bg-green-900/50 text-green-200;
+  }
+
+  .dark .status-rejected {
+    @apply bg-red-900/50 text-red-200;
+  }
+
+  .nav-button {
+    @apply inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .nav-button-active {
+    @apply bg-primary text-primary-foreground shadow-sm focus:ring-primary;
+  }
+
+  .nav-button-inactive {
+    @apply text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:ring-slate-500;
+  }
+
+  .dark .nav-button-inactive {
+    @apply text-slate-400 hover:text-slate-100 hover:bg-slate-800;
+  }
+
+  .metric-card {
+    @apply bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .dark .metric-card {
+    @apply bg-slate-800 border-slate-700;
+  }
+
+  .action-button {
+    @apply inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .action-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm;
+  }
+
+  .action-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-input;
+  }
+
+  .action-button-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm;
+  }
+
+  .search-input {
+    @apply flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* Remove pink theme overrides */
 .select-item-hover-black:hover {
-  color: #000 !important;
+  color: inherit !important;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Trash2, Mail, Phone, ExternalLink } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -18,15 +18,18 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-const STATUS_COLORS: Record<string, string> = {
-  Applied: "bg-gray-500 text-white",
-  Shortlisted: "bg-blue-500 text-white",
-  "Interview Scheduled": "bg-yellow-500 text-white",
-  Interviewed: "bg-indigo-500 text-white",
-  "Offer Extended": "bg-teal-500 text-white",
-  Hired: "bg-pink-500 text-white",
-  Rejected: "bg-red-400 text-white",
+import { Badge } from "@/components/ui/badge";
+
+const STATUS_STYLES: Record<string, string> = {
+  Applied: "status-applied",
+  Shortlisted: "status-shortlisted",
+  "Interview Scheduled": "status-interview-scheduled",
+  Interviewed: "status-interviewed",
+  "Offer Extended": "status-offer-extended",
+  Hired: "status-hired",
+  Rejected: "status-rejected",
 };
+
 interface Candidate {
   id: string;
   full_name: string;
@@ -85,17 +88,56 @@ export const CandidatesTable: React.FC<CandidatesTableProps> = ({
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="professional-table">
+        <div className="p-8 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-slate-200 rounded w-1/4 mx-auto"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-slate-200 rounded"></div>
+              <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+              <div className="h-4 bg-slate-200 rounded w-4/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="professional-table">
+        <div className="p-8 text-center">
+          <p className="text-red-600 dark:text-red-400">Error loading candidates.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="overflow-x-auto rounded-xl glass-table min-h-[220px]">
+    <div className="space-y-4">
       {/* Bulk Actions */}
       {selectedIds.length > 0 && (
-        <div className="mb-2 flex items-center gap-2">
-          <Button variant="destructive" onClick={handleBulkDelete}>
-            Delete Selected ({selectedIds.length})
+        <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+            {selectedIds.length} selected
+          </span>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleBulkDelete}
+            className="action-button action-button-destructive h-8 px-3"
+          >
+            Delete Selected
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="bg-pink-500/80 text-white hover:bg-pink-600">
+              <Button
+                variant="outline"
+                size="sm"
+                className="action-button action-button-secondary h-8 px-3"
+              >
                 Change Status
               </Button>
             </DropdownMenuTrigger>
@@ -111,232 +153,254 @@ export const CandidatesTable: React.FC<CandidatesTableProps> = ({
           </DropdownMenu>
         </div>
       )}
-      {isLoading ? (
-        <div className="text-center py-10 text-pink-200">Loading...</div>
-      ) : error ? (
-        <div className="text-red-400 text-center py-10">
-          Error loading candidates.
-        </div>
-      ) : (
-        <>
-          {/* Desktop Table */}
-          <div className="hidden sm:block">
-            <table className="min-w-full divide-y divide-pink-600/20">
-              <thead>
-                <tr>
-                  <th className="px-2 py-2 text-left text-sm text-pink-100">
+
+      {/* Desktop Table */}
+      <div className="hidden lg:block professional-table">
+        <table className="w-full">
+          <thead className="bg-slate-50 dark:bg-slate-800/50">
+            <tr>
+              <th className="w-12 px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={toggleSelectAll}
+                  className="rounded border-slate-300 text-primary focus:ring-primary"
+                  aria-label="Select all candidates"
+                />
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Name
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Contact
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Applied
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Resume
+              </th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+            {candidates.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                  No candidates found.
+                </td>
+              </tr>
+            ) : (
+              candidates.map((candidate) => (
+                <tr key={candidate.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="px-4 py-3">
                     <input
                       type="checkbox"
-                      checked={allSelected}
-                      onChange={toggleSelectAll}
-                      aria-label="Select all candidates"
+                      checked={selectedIds.includes(candidate.id)}
+                      onChange={() => toggleSelect(candidate.id)}
+                      className="rounded border-slate-300 text-primary focus:ring-primary"
+                      aria-label={`Select candidate ${candidate.full_name}`}
                     />
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Name</th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Contact</th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Date</th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Status</th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Resume</th>
-                  <th className="px-4 py-2 text-left text-sm text-pink-100">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(candidates) && candidates.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="text-center py-6 text-white/60">
-                      No candidates found.
-                    </td>
-                  </tr>
-                )}
-                {Array.isArray(candidates) &&
-                  candidates.map((c) => (
-                    <tr key={c.id} className="hover:bg-pink-200/5 transition-all group">
-                      <td className="px-2 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(c.id)}
-                          onChange={() => toggleSelect(c.id)}
-                          aria-label={`Select candidate ${c.full_name}`}
-                        />
-                      </td>
-                      <td className="px-4 py-3 font-medium text-white/90">
-                        {c.full_name}
-                      </td>
-                      <td className="px-4 py-3 text-white/75">
-                        <div className="flex flex-col gap-2">
-                          {c.email && (
-                            <a
-                              href={`mailto:${c.email}`}
-                              className="inline-flex items-center text-pink-200 hover:text-pink-300 hover:underline transition-colors"
-                              title={`Send email to ${c.email}`}
-                            >
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                              </svg>
-                              {c.email}
-                            </a>
-                          )}
-                          {c.phone && (
-                            <a
-                              href={`tel:${c.phone}`}
-                              className="inline-flex items-center text-pink-200 hover:text-pink-300 hover:underline transition-colors"
-                              title={`Call ${c.phone}`}
-                            >
-                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                              </svg>
-                              {c.phone}
-                            </a>
-                          )}
-                          {!c.email && !c.phone && (
-                            <span className="text-white/40 text-xs">No contact info</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-white/70">
-                        {c.application_date}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold shadow ${
-                            STATUS_COLORS[c.status] || "bg-gray-800 text-white"
-                          }`}
-                        >
-                          {c.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {c.resume_url ? (
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
+                      {candidate.full_name}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="space-y-1">
+                      {candidate.email && (
+                        <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                          <Mail className="w-4 h-4 mr-2" />
                           <a
-                            href={c.resume_url}
-                            className="inline-flex items-center text-pink-200 hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href={`mailto:${candidate.email}`}
+                            className="hover:text-primary transition-colors"
                           >
-                            <Edit size={18} className="mr-1" /> View
+                            {candidate.email}
                           </a>
-                        ) : (
-                          <span className="text-white/40 text-xs">(No resume)</span>
-                        )}
-                      </td>
-                      {/* Actions cell with both Edit & Delete */}
-                      <td className="px-4 py-3 text-left min-w-[130px]">
-                        <Button variant="ghost" size="icon" onClick={() => onEdit(c)}>
-                          <Edit className="h-4 w-4 text-pink-300" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteCandidateId(c.id)}
-                        >
-                          <Trash className="h-4 w-4 text-red-400" />
-                        </Button>
-                        <AlertDialog open={deleteCandidateId === c.id} onOpenChange={(open) => setDeleteCandidateId(open ? c.id : null)}>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Candidate?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to permanently delete{" "}
-                                <span className="font-bold">{c.full_name}</span>? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel asChild>
-                                <button
-                                  className="px-4 py-2 rounded-lg border border-pink-300 text-pink-700 bg-transparent hover:bg-pink-50 transition-all"
-                                  onClick={() => setDeleteCandidateId(null)}
-                                >
-                                  Cancel
-                                </button>
-                              </AlertDialogCancel>
-                              <AlertDialogAction asChild>
-                                <button
-                                  className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-700 transition-all"
-                                  onClick={() => onDelete(c.id)}
-                                >
-                                  Delete
-                                </button>
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          {/* Mobile Card List */}
-          <div className="block sm:hidden">
-            {Array.isArray(candidates) && candidates.length === 0 && (
-              <div className="text-center py-6 text-white/60">No candidates found.</div>
-            )}
-            {Array.isArray(candidates) && candidates.map((c) => (
-              <div key={c.id} className="mb-4 rounded-xl bg-pink-900/30 border border-pink-400/20 p-4 shadow flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-bold text-white text-lg">{c.full_name}</div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold shadow ${STATUS_COLORS[c.status] || "bg-gray-800 text-white"}`}>{c.status}</span>
-                </div>
-                <div className="flex flex-col gap-1 text-white/80">
-                  <div><span className="font-semibold">Contact: </span>
-                    <span className="flex flex-col gap-1">
-                      {c.email && (
-                        <a href={`mailto:${c.email}`} className="inline-flex items-center text-pink-200 hover:text-pink-300 hover:underline transition-colors" title={`Send email to ${c.email}`}>{c.email}</a>
+                        </div>
                       )}
-                      {c.phone && (
-                        <a href={`tel:${c.phone}`} className="inline-flex items-center text-pink-200 hover:text-pink-300 hover:underline transition-colors" title={`Call ${c.phone}`}>{c.phone}</a>
+                      {candidate.phone && (
+                        <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                          <Phone className="w-4 h-4 mr-2" />
+                          <a
+                            href={`tel:${candidate.phone}`}
+                            className="hover:text-primary transition-colors"
+                          >
+                            {candidate.phone}
+                          </a>
+                        </div>
                       )}
-                      {!c.email && !c.phone && (<span className="text-white/40 text-xs">No contact info</span>)}
-                    </span>
-                  </div>
-                  <div><span className="font-semibold">Applied: </span>{c.application_date}</div>
-                  <div><span className="font-semibold">Resume: </span>
-                    {c.resume_url ? (
-                      <a href={c.resume_url} className="text-pink-200 hover:underline" target="_blank" rel="noopener noreferrer">View Resume</a>
+                      {!candidate.email && !candidate.phone && (
+                        <span className="text-sm text-slate-400">No contact info</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                    {new Date(candidate.application_date).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge className={`status-badge ${STATUS_STYLES[candidate.status] || "status-applied"}`}>
+                      {candidate.status}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3">
+                    {candidate.resume_url ? (
+                      <a
+                        href={candidate.resume_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        View Resume
+                      </a>
                     ) : (
-                      <span className="text-white/40 text-xs">(No resume)</span>
+                      <span className="text-sm text-slate-400">No resume</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEdit(candidate)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeleteCandidateId(candidate.id)}
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card List */}
+      <div className="lg:hidden space-y-4">
+        {candidates.length === 0 ? (
+          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            No candidates found.
+          </div>
+        ) : (
+          candidates.map((candidate) => (
+            <div key={candidate.id} className="glass-card rounded-lg p-4 space-y-3">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(candidate.id)}
+                    onChange={() => toggleSelect(candidate.id)}
+                    className="rounded border-slate-300 text-primary focus:ring-primary"
+                  />
+                  <div>
+                    <h3 className="font-medium text-slate-900 dark:text-slate-100">
+                      {candidate.full_name}
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Applied {new Date(candidate.application_date).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-2">
-                  <Button size="sm" variant="secondary" onClick={() => onEdit(c)}>Edit</Button>
-                  <Button size="sm" variant="destructive" onClick={() => setDeleteCandidateId(c.id)}>Delete</Button>
-                  <AlertDialog open={deleteCandidateId === c.id} onOpenChange={(open) => setDeleteCandidateId(open ? c.id : null)}>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Candidate?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to permanently delete{" "}
-                          <span className="font-bold">{c.full_name}</span>? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel asChild>
-                          <button
-                            className="px-4 py-2 rounded-lg border border-pink-300 text-pink-700 bg-transparent hover:bg-pink-50 transition-all"
-                            onClick={() => setDeleteCandidateId(null)}
-                          >
-                            Cancel
-                          </button>
-                        </AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                          <button
-                            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-700 transition-all"
-                            onClick={() => onDelete(c.id)}
-                          >
-                            Delete
-                          </button>
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                <Badge className={`status-badge ${STATUS_STYLES[candidate.status] || "status-applied"}`}>
+                  {candidate.status}
+                </Badge>
               </div>
-            ))}
-          </div>
-        </>
-      )}
+
+              <div className="space-y-2">
+                {candidate.email && (
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                    <Mail className="w-4 h-4 mr-2" />
+                    <a href={`mailto:${candidate.email}`} className="hover:text-primary transition-colors">
+                      {candidate.email}
+                    </a>
+                  </div>
+                )}
+                {candidate.phone && (
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                    <Phone className="w-4 h-4 mr-2" />
+                    <a href={`tel:${candidate.phone}`} className="hover:text-primary transition-colors">
+                      {candidate.phone}
+                    </a>
+                  </div>
+                )}
+                {candidate.resume_url && (
+                  <div className="flex items-center text-sm">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    <a
+                      href={candidate.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:text-primary/80 transition-colors"
+                    >
+                      View Resume
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit(candidate)}
+                  className="action-button action-button-secondary h-8 px-3"
+                >
+                  <Edit className="w-4 h-4 mr-1" />
+                  Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDeleteCandidateId(candidate.id)}
+                  className="h-8 px-3 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:hover:bg-red-900/20"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteCandidateId} onOpenChange={(open) => !open && setDeleteCandidateId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Candidate?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete this candidate? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteCandidateId(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteCandidateId && onDelete(deleteCandidateId)}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
