@@ -1,0 +1,5 @@
+
+full_name,email,phone,application_date,status,resume_url
+Jane Doe,jane.doe@example.com,123-456-7890,2024-05-29,Applied,https://example.com/jane_resume.pdf
+John Smith,john.smith@example.com,234-567-8901,2024-05-30,Interviewing,https://example.com/john_resume.pdf
+Maria Garcia,maria.garcia@example.com,345-678-9012,2024-05-31,Hired,https://example.com/maria_resume.pdf
