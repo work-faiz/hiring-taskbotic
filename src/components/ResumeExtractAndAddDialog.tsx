@@ -37,16 +37,21 @@ export const ResumeExtractAndAddDialog: React.FC<Props> = ({
     setPdfFile(null);
     setFields({});
     if (!file) return;
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setExtractError("Only PDF files are supported.");
+    
+    const fileName = file.name.toLowerCase();
+    const supportedExtensions = ['.pdf', '.docx', '.txt'];
+    const isSupported = supportedExtensions.some(ext => fileName.endsWith(ext));
+    
+    if (!isSupported) {
+      setExtractError("Only PDF, DOCX, and TXT files are supported.");
       return;
     }
+    
     setUploading(true);
     try {
-      // Try/catch at this level to capture all errors
+      console.log('Starting extraction for file:', file.name, 'Type:', file.type, 'Size:', file.size);
       const res = await extractCandidateDetails(file);
 
-      // Defensive: Ensure res is an object
       if (!res || typeof res !== "object") {
         setExtractError("Resume parsing failed: Unexpected response from extraction service.");
         toast({
@@ -58,18 +63,7 @@ export const ResumeExtractAndAddDialog: React.FC<Props> = ({
         return;
       }
 
-      // Defensive: If the backend sent 'error' in result, display that to user
-      // (The edge function sometimes returns {error: string, ...})
-      if ('error' in res && typeof res.error === "string") {
-        setExtractError(`Extraction API error: ${res.error}`);
-        toast({
-          title: "Extraction Failed",
-          description: res.error,
-          variant: "destructive"
-        });
-        setUploading(false);
-        return;
-      }
+      console.log('Extraction successful:', res);
 
       setFields({
         full_name: res.full_name ?? "",
@@ -78,7 +72,7 @@ export const ResumeExtractAndAddDialog: React.FC<Props> = ({
       });
       setPdfFile(file);
     } catch (err: any) {
-      // If err.message exists, show it; else generic msg
+      console.error('Extraction failed:', err);
       let msg = "Failed to extract details from PDF.";
       if (err?.message) msg += " " + err.message;
       setExtractError(msg);
@@ -131,11 +125,11 @@ export const ResumeExtractAndAddDialog: React.FC<Props> = ({
               className="bg-fuchsia-700 text-white"
             >
               <UploadCloud className="mr-2" size={18} />
-              {uploading ? "Extracting..." : "Upload PDF Resume"}
+              {uploading ? "Extracting..." : "Upload Resume (PDF/DOCX/TXT)"}
             </Button>
             <input
               type="file"
-              accept=".pdf"
+              accept=".pdf,.docx,.txt"
               ref={fileInputRef}
               className="hidden"
               onChange={handleFileChange}
