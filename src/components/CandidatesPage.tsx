@@ -11,8 +11,15 @@ import { Button } from "@/components/ui/button";
 import { useCreateInterview } from "@/hooks/useInterviews";
 import { supabase } from '@/integrations/supabase/client';
 
-const PAGE_SIZE = 15;
+function GlassCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-black/60 backdrop-blur-md shadow-lg border border-pink-500/20 p-6 mb-6">
+      {children}
+    </div>
+  );
+}
 
+const PAGE_SIZE = 15;
 const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void } = {}) => {
   // Try to restore from localStorage
   const getInitialOffset = () => {
@@ -236,113 +243,114 @@ const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header with Extract Resume Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-extrabold text-pink-400 drop-shadow-lg">
+          Candidate Management
+        </h2>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setExtractDialogOpen(true)}
+            className="border-pink-400/60 bg-white/10 text-pink-400 hover:bg-pink-700/30 flex items-center gap-2 px-4 py-2"
+            title="Extract from PDF Resume"
+          >
+            <FileSearch size={18} />
+            Extract Resume (PDF)
+          </Button>
+        </div>
+      </div>
+      <GlassCard>
         <CandidatesHeader
           search={search}
           setSearch={setSearch}
           onBulk={() => setBulkOpen(true)}
           onAdd={handleAddButtonClick}
         />
-        <Button
-          variant="outline"
-          onClick={() => setExtractDialogOpen(true)}
-          className="action-button action-button-secondary h-10 px-4 self-start sm:self-auto"
-        >
-          <FileSearch className="w-4 h-4 mr-2" />
-          Extract from Resume
-        </Button>
-      </div>
-
-      {/* Table */}
-      <CandidatesTable
-        candidates={Array.isArray(candidates) ? candidates : []}
-        isLoading={isLoading && offset === 0}
-        error={error}
-        onDelete={handleDelete}
-        deleteCandidateId={deleteCandidateId}
-        setDeleteCandidateId={setDeleteCandidateId}
-        onEdit={handleEditCandidate}
-        onBulkDelete={async (ids: string[]) => {
-          for (const id of ids) {
-            await new Promise((resolve) => {
-              deleteCandidate.mutate(id, {
-                onSettled: resolve,
+        <CandidatesTable
+          candidates={Array.isArray(candidates) ? candidates : []}
+          isLoading={isLoading && offset === 0}
+          error={error}
+          onDelete={handleDelete}
+          deleteCandidateId={deleteCandidateId}
+          setDeleteCandidateId={setDeleteCandidateId}
+          onEdit={handleEditCandidate}
+          onBulkDelete={async (ids: string[]) => {
+            for (const id of ids) {
+              await new Promise((resolve) => {
+                deleteCandidate.mutate(id, {
+                  onSettled: resolve,
+                });
               });
-            });
-          }
-        }}
-        onBulkStatusChange={async (ids: string[], status: string) => {
-          bulkStatusChange.mutate(
-            { ids, status },
-            {
-              onSuccess: () => {
-                toast({
-                  title: "Status Updated",
-                  description: `Status changed to '${status}' for ${ids.length} candidate(s).`,
-                });
-                setOffset(0);
-                setAllCandidates([]);
-                setHasMore(true);
-                refetch();
-              },
-              onError: (err: any) => {
-                toast({
-                  title: "Error updating status",
-                  description: err?.message || "Failed to update status.",
-                  variant: "destructive",
-                });
-              },
             }
-          );
-          // Automatically create interview if status is 'Interview Scheduled'
-          if (status === "Interview Scheduled") {
-            for (const candidateId of ids) {
-              // Check for existing interview for this candidate
-              const { data: existingInterviews, error } = await supabase
-                .from('interviews')
-                .select('id')
-                .eq('candidate_id', candidateId);
-              if (!error && existingInterviews && existingInterviews.length === 0) {
-                createInterview.mutate({
-                  candidate_id: candidateId,
-                  interview_date: new Date().toISOString(),
-                  type: "General",
-                  status: "Scheduled",
-                  location: null,
-                  duration: 60,
-                  notes: null,
-                  feedback: null,
-                  interviewer_id: null,
-                });
-              } else if (existingInterviews && existingInterviews.length > 0) {
-                toast({
-                  title: 'Interview already scheduled',
-                  description: 'This candidate already has an interview scheduled.',
-                  variant: 'destructive',
-                });
+          }}
+          onBulkStatusChange={async (ids: string[], status: string) => {
+            bulkStatusChange.mutate(
+              { ids, status },
+              {
+                onSuccess: () => {
+                  toast({
+                    title: "Status Updated",
+                    description: `Status changed to '${status}' for ${ids.length} candidate(s).`,
+                  });
+                  setOffset(0);
+                  setAllCandidates([]);
+                  setHasMore(true);
+                  refetch();
+                },
+                onError: (err: any) => {
+                  toast({
+                    title: "Error updating status",
+                    description: err?.message || "Failed to update status.",
+                    variant: "destructive",
+                  });
+                },
+              }
+            );
+            // Automatically create interview if status is 'Interview Scheduled'
+            if (status === "Interview Scheduled") {
+              for (const candidateId of ids) {
+                // Check for existing interview for this candidate
+                const { data: existingInterviews, error } = await supabase
+                  .from('interviews')
+                  .select('id')
+                  .eq('candidate_id', candidateId);
+                if (!error && existingInterviews && existingInterviews.length === 0) {
+                  createInterview.mutate({
+                    candidate_id: candidateId,
+                    interview_date: new Date().toISOString(),
+                    type: "General",
+                    status: "Scheduled",
+                    location: null,
+                    duration: 60,
+                    notes: null,
+                    feedback: null,
+                    interviewer_id: null,
+                  });
+                } else if (existingInterviews && existingInterviews.length > 0) {
+                  toast({
+                    title: 'Interview already scheduled',
+                    description: 'This candidate already has an interview scheduled.',
+                    variant: 'destructive',
+                  });
+                }
               }
             }
-          }
-        }}
-      />
+          }}
+        />
+        {hasMore && (
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={handleLoadMore}
+              disabled={isFetching}
+              className="transition-colors duration-200 bg-pink-500 text-white hover:bg-pink-700 hover:text-pink-100 font-bold px-6 py-2 rounded-full shadow-lg"
+            >
+              {isFetching ? "Loading..." : "Load More"}
+            </Button>
+          </div>
+        )}
+      </GlassCard>
 
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="flex justify-center pt-4">
-          <Button
-            onClick={handleLoadMore}
-            disabled={isFetching}
-            variant="outline"
-            className="action-button action-button-secondary h-10 px-6"
-          >
-            {isFetching ? "Loading..." : "Load More"}
-          </Button>
-        </div>
-      )}
-
-      {/* Dialogs */}
       <BulkCandidateUpload open={bulkOpen} onOpenChange={setBulkOpen} />
       <CandidateForm 
         open={formOpen} 
