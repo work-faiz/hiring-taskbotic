@@ -23,7 +23,6 @@ import { Button } from '@/components/ui/button';
 import { useCandidates } from '@/hooks/useCandidates';
 import { useEmployees } from '@/hooks/useEmployees';
 import { useCreateInterview, useUpdateInterview } from '@/hooks/useInterviews';
-import { Tables, TablesInsert } from '@/integrations/supabase/types';
 import {
   Select,
   SelectContent,
@@ -38,6 +37,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { SimpleSearchBar } from "./SimpleSearchBar";
+import { Input as TimeInput } from './ui/input';
 
 const interviewFormSchema = z.object({
   candidate_id: z.string().uuid('Please select a candidate.'),
@@ -56,7 +56,7 @@ type InterviewFormValues = z.infer<typeof interviewFormSchema>;
 interface InterviewFormProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  interview?: Tables<'interviews'>;
+  interview?: any; // Changed from Tables<'interviews'> to any
 }
 
 const InterviewForm: React.FC<InterviewFormProps> = ({ isOpen, setIsOpen, interview }) => {
@@ -69,6 +69,29 @@ const InterviewForm: React.FC<InterviewFormProps> = ({ isOpen, setIsOpen, interv
     candidates: searchedCandidates,
     isLoading: isSearchingCandidates,
   } = useCandidates(15, 0, searchTerm);
+
+  // Add state for time input
+  const [time, setTime] = React.useState(() => {
+    if (interview) {
+      const d = new Date(interview.interview_date);
+      return d.toTimeString().slice(0,5); // 'HH:MM'
+    }
+    const now = new Date();
+    return now.toTimeString().slice(0,5);
+  });
+
+  // Sync time state when modal opens or interview changes
+  React.useEffect(() => {
+    if (isOpen) {
+      if (interview) {
+        const d = new Date(interview.interview_date);
+        setTime(d.toTimeString().slice(0,5));
+      } else {
+        const now = new Date();
+        setTime(now.toTimeString().slice(0,5));
+      }
+    }
+  }, [interview, isOpen]);
 
   const defaultValues = {
     candidate_id: '',
@@ -106,17 +129,26 @@ const InterviewForm: React.FC<InterviewFormProps> = ({ isOpen, setIsOpen, interv
     }
   }, [interview, isOpen, form]);
 
+  // Update interview_date with selected time on submit
   const onSubmit = (values: InterviewFormValues) => {
+    let date = new Date(values.interview_date);
+    if (time) {
+      const [hours, minutes] = time.split(":").map(Number);
+      date.setHours(hours);
+      date.setMinutes(minutes);
+      date.setSeconds(0);
+      date.setMilliseconds(0);
+    }
     const payload = {
       ...values,
-      interview_date: values.interview_date.toISOString(),
+      interview_date: date.toISOString(),
     };
 
     if (interview) {
       updateInterview.mutate({ id: interview.id, ...payload });
     } else {
       // Zod validation ensures these fields are present. This assertion helps TypeScript.
-      createInterview.mutate(payload as TablesInsert<'interviews'>);
+      createInterview.mutate(payload as any);
     }
     setIsOpen(false);
   };
@@ -236,6 +268,16 @@ const InterviewForm: React.FC<InterviewFormProps> = ({ isOpen, setIsOpen, interv
                       />
                     </PopoverContent>
                   </Popover>
+                  {/* Time Picker */}
+                  <div className="mt-2">
+                    <FormLabel>Interview Time</FormLabel>
+                    <TimeInput
+                      type="time"
+                      value={time}
+                      onChange={e => setTime(e.target.value)}
+                      className="!text-white bg-black/60 border-pink-400/30 placeholder:text-pink-200 w-full"
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

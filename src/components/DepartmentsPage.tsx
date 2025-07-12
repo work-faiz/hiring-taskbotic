@@ -116,7 +116,7 @@ const DepartmentsPage = ({ onCountChange }: { onCountChange?: (n: number) => voi
   }, [departments, onCountChange]);
 
   return (
-    <div>
+    <div className="p-4 sm:p-6">
       {/* Main Directory Heading at the very top */}
       <h2 className="text-3xl font-extrabold text-pink-400 drop-shadow-lg mb-6">
         Departments

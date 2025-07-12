@@ -89,7 +89,7 @@ const EmployeesPage = ({ onCountChange }: { onCountChange?: (n: number) => void 
   }, [employees, onCountChange]);
 
   return (
-    <div>
+    <div className="p-4 sm:p-6">
       <h2 className="text-3xl font-extrabold text-pink-400 drop-shadow-lg mb-6">
         Employee Directory
       </h2>

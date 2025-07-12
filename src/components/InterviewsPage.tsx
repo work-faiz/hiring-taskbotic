@@ -20,6 +20,7 @@ import {
 import { format } from 'date-fns';
 import InterviewForm from './InterviewForm';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Link as RouterLink } from "react-router-dom";
 
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
@@ -145,6 +146,7 @@ const InterviewsPage = ({ onCountChange }: { onCountChange?: (n: number) => void
                   <TableHead className="text-white">Candidate</TableHead>
                   <TableHead className="text-white">Interviewer</TableHead>
                   <TableHead className="text-white">Date</TableHead>
+                  <TableHead className="text-white">Time</TableHead>
                   <TableHead className="text-white">Location</TableHead>
                   <TableHead className="text-white">Type</TableHead>
                   <TableHead className="text-white">Status</TableHead>
@@ -172,9 +174,25 @@ const InterviewsPage = ({ onCountChange }: { onCountChange?: (n: number) => void
                         aria-label={`Select interview ${interview.id}`}
                       />
                     </TableCell>
-                    <TableCell className="text-white">{interview.candidates?.full_name || 'N/A'}</TableCell>
+                    <TableCell className="text-white">{
+                      interview.candidates?.full_name ? (
+                        <span style={{ display: "inline-block", width: "100%" }}>
+                          <RouterLink
+                            to={`/candidate_view?id=${interview.candidate_id}`}
+                            className="text-pink-300 hover:underline hover:text-pink-400 transition-colors"
+                            role="link"
+                            tabIndex={0}
+                            style={{ cursor: "pointer" }}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            {interview.candidates.full_name}
+                          </RouterLink>
+                        </span>
+                      ) : 'N/A'
+                    }</TableCell>
                     <TableCell className="text-white">{interview.employees?.full_name || 'N/A'}</TableCell>
                     <TableCell className="text-white">{format(new Date(interview.interview_date), 'PP')}</TableCell>
+                    <TableCell className="text-white">{new Date(interview.interview_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
                     <TableCell className="text-white">
                       {interview.location && (interview.location.startsWith('http://') || interview.location.startsWith('https://')) ? (
                         <Button asChild variant="outline" size="sm" className="border-pink-400 text-pink-400 hover:bg-pink-500 hover:text-white">

@@ -10,6 +10,7 @@ import { FileSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCreateInterview } from "@/hooks/useInterviews";
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from "react-router-dom";
 
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
@@ -59,6 +60,7 @@ const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void
   const [editCandidateData, setEditCandidateData] = useState<any | null>(null);
   const { toast } = useToast();
   const createInterview = useCreateInterview();
+  const navigate = useNavigate();
 
   console.log("CandidatesPage rendering");
   console.log("Form open state:", formOpen);
@@ -161,6 +163,10 @@ const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void
                 notes: null,
                 feedback: null,
                 interviewer_id: null,
+              }, {
+                onSuccess: () => {
+                  navigate(`/candidate/${candidateId}`);
+                }
               });
             } else if (existingInterviews && existingInterviews.length > 0) {
               toast({
@@ -168,6 +174,7 @@ const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void
                 description: 'This candidate already has an interview scheduled.',
                 variant: 'destructive',
               });
+              navigate(`/candidate/${candidateId}`);
             }
           }
         }
@@ -243,7 +250,7 @@ const CandidatesPage = ({ onCountChange }: { onCountChange?: (n: number) => void
   };
 
   return (
-    <div>
+    <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-extrabold text-pink-400 drop-shadow-lg">
           Candidate Management

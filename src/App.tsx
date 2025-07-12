@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/Auth";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
+import CandidatePage from "./components/CandidatePage";
+import CandidateViewPage from "./components/CandidateViewPage";
+import CandidateLogin from "./components/CandidateLogin";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +50,16 @@ const AppRoutes = () => (
         <Index />
       </ProtectedRoute>
     } />
+    {/* Candidate details page route */}
+    <Route path="/candidate/:id" element={
+      <ProtectedRoute>
+        <CandidatePage />
+      </ProtectedRoute>
+    } />
+    {/* Candidate view page route (now /candidate_view) */}
+    <Route path="/candidate_view" element={<CandidateViewPage />} />
+    {/* Candidate login route - no authentication required */}
+    <Route path="/candidate-login" element={<CandidateLogin />} />
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
     <Route path="*" element={<NotFound />} />
   </Routes>

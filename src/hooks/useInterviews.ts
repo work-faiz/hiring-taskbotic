@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
+import { sendInterviewUpdateEmail } from '@/utils/sendInterviewEmail';
 
 // export type InterviewWithRelations = Tables<'interviews'> & {
 //   candidates: { full_name: string } | null;
@@ -66,9 +67,30 @@ export const useUpdateInterview = () => {
       if (error) throw new Error(error.message);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['interviews'] });
       toast({ title: 'Success', description: 'Interview updated successfully.' });
+
+      // Fetch candidate details and send email
+      const interview = data?.[0];
+      if (interview?.candidate_id) {
+        const { data: candidate } = await supabase
+          .from('candidates')
+          .select('email, full_name')
+          .eq('id', interview.candidate_id)
+          .single();
+
+        if (candidate?.email) {
+          await sendInterviewUpdateEmail({
+            to_email: candidate.email,
+            to_name: candidate.full_name,
+            interview_date: interview.interview_date,
+            interview_link: interview.location,
+            login_url: `${window.location.origin}/candidate-login`,
+            company_name: 'TaskBotic AI Solutions',
+          });
+        }
+      }
     },
     onError: (error) => {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });

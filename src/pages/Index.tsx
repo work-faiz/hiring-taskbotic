@@ -3,7 +3,7 @@ import CandidatesPage from "@/components/CandidatesPage";
 import EmployeesPage from "@/components/EmployeesPage";
 import DepartmentsPage from "@/components/DepartmentsPage";
 import InterviewsPage from "@/components/InterviewsPage";
-import { Users, Briefcase, LogOut, Building2, Calendar, Menu as MenuIcon } from "lucide-react";
+import { Users, Briefcase, LogOut, Building2, Calendar, Menu as MenuIcon, UserCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { useTotalEmployees } from "@/hooks/useEmployees";
 import { useTotalDepartments } from "@/hooks/useDepartments";
 import { useTotalInterviews } from "@/hooks/useInterviews";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 // Menu for navigation bar
 const MENU = [
@@ -60,6 +61,7 @@ const Index = () => {
   const { data: totalInterviews, isLoading: isLoadingTotalInterviews } = useTotalInterviews();
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchUsername() {
@@ -252,6 +254,9 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          {/* Candidate Login Section */}
+          {/* Removed Candidate Login button and section as requested */}
           {/* Page sections */}
           <div className="rounded-2xl bg-white/10 border border-pink-200/10 shadow-2xl backdrop-blur-2xl p-0 sm:p-2 animate-fade-in">
             <div className="min-h-[60vh]">
